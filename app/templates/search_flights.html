@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Search Flights</title>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">FS</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h2>Search for Flights</h2>
+        <form action="/search_flights" method="POST">
+            <div>
+                <label for="source">From (City or Airport):</label>
+                <input type="text" name="source" required>
+            </div>
+            <div>
+                <label for="destination">To (City or Airport):</label>
+                <input type="text" name="destination" required>
+            </div>
+            <div>
+                <label for="trip_type">Trip Type:</label>
+                <select id="trip_type" onchange="toggleReturnDate()">
+                    <option value="one_way">One Way</option>
+                    <option value="round_trip">Round Trip</option>
+                </select>
+            </div>
+            <div>
+                <label for="departure_date">Departure Date:</label>
+                <input type="date" name="departure_date" required>
+            </div>
+            <div id="return_date_div" style="display: none;">
+                <label for="return_date">Return Date:</label>
+                <input type="date" name="return_date">
+            </div>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    
+    <script>
+        function toggleReturnDate() {
+            const tripType = document.getElementById('trip_type').value;
+            const returnDateDiv = document.getElementById('return_date_div');
+            
+            if (tripType === 'round_trip') {
+                returnDateDiv.style.display = 'block';
+            } else {
+                returnDateDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

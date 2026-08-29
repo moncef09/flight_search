@@ -1,0 +1,43 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}View Reports{%
+endblock %} {% block content %}
+
+<h1>View Reports</h1>
+
+<form action="/home_airlineStaff_report" method="POST">
+    <label for="start_date">Start Date:</label>
+    <input type="date" id="start_date" name="start_date" value="{{ start_date }}" />
+    <label for="end_date">End Date:</label>
+    <input type="date" id="end_date" name="end_date" value="{{ end_date }}" />
+    <button type="submit">Filter</button>
+</form>
+
+{% if total_sales %}
+<h2>Total Sales</h2>
+<p><strong>Total Tickets Sold:</strong> {{ total_sales['total_tickets'] }}</p>
+{% endif %}
+
+{% if monthly_sales %}
+<h2>Monthly Sales Data</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Month</th>
+            <th>Tickets Sold</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in monthly_sales %}
+        <tr>
+            <td>{{ row['month'] }}</td>
+            <td>{{ row['tickets_sold'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if error %}
+<p class="error"><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+{% endblock %}

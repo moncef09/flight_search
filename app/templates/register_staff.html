@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Document</title>
+</head>
+
+<header>
+	<nav>
+		<div class="nav-logo">FS</div>
+		<ul class="nav-links">
+			<li><a href="/">Home</a></li>
+			<li><a href="/register">Register</a></li>
+			<li><a href="/login">Login</a></li>
+		  </ul>
+	</nav>
+</header>
+
+<body>
+    <div class="form-container">
+        <form action="/registerAuthAirlineStaff" method="POST">
+            <h2>Airline Staff</h2>
+            <p>	Log in with your credentials below: </p>
+            <input type="text" name = "username" placeholder="username" required/> </br>
+            <input type="password" name = "password" placeholder="password" required/></br>
+            <input type="text" name = "f_name" placeholder="First Name" required/></br>
+            <input type="text" name = "l_name" placeholder="Last Name" required/></br>
+            <input type="date" name="date_of_birth" placeholder="Date of Birth (YYYY-MM-DD)" required/>
+            
+            <div id="phone-container">
+                <input type="text" name="phone[]" maxlength="10" placeholder="Phone Number" required/>
+            </div>
+            <button type="button" onclick="addPhoneField()" style="width: 40%; background-color:rgba(214, 214, 214, 0.923); font-weight: 200; color: black; font-size: small;">+ Add Phone</button><br/><br/>
+
+            <div id="email-container" >
+                <input type="text" name="email[]" placeholder="Email Address" required/>
+            </div>
+            <button type="button" onclick="addEmailField()" style="width: 40%; background-color:rgba(214, 214, 214, 0.923); font-weight: 200; color: black; font-size: small;">+ Add Email</button><br/><br/>
+
+            <input type="text" name = "airline_name" placeholder="Airline Name" required/></br>
+            <button type="submit"> Register</button>
+            {% if error %}
+                <p class="error"><strong>Error:</strong> {{error}}</p>
+            {% endif %}
+        </form>
+        </div>
+</body>
+
+<script>
+    function addPhoneField() {
+        const container = document.getElementById("phone-container");
+        const newInput = document.createElement("input");
+        newInput.type = "text";
+        newInput.name = "phone[]"; 
+        newInput.placeholder = "Additional Phone Number";
+        container.appendChild(document.createElement("br"));
+        container.appendChild(newInput);
+    }
+
+    function addEmailField() {
+        const container = document.getElementById("email-container");
+        const newInput = document.createElement("input");
+        newInput.type = "text";
+        newInput.name = "email[]"; 
+        newInput.placeholder = "Additional Email Address";
+        container.appendChild(document.createElement("br"));
+        container.appendChild(newInput);
+    }
+</script>
+
+
+</html>

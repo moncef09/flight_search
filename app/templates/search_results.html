@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Flight Search Results</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">FS</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </nav>
+    
+    <div class="search-results-container">
+        <h1 class="search-results-title">Flight Search Results</h1>
+        
+        <div class="flights-section">
+            <h2>Departure Flights</h2>
+            {% if departure_flights %}
+                <table class="flights-table">
+                    <thead>
+                        <tr>
+                            <th>Airline</th>
+                            <th>Flight #</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flight in departure_flights %}
+                        <tr>
+                            <td>{{ flight.Airline_Name }}</td>
+                            <td>{{ flight.flight_no }}</td>
+                            <td>{{ flight.departure_date_and_time }}</td>
+                            <td>{{ flight.arrival_date_and_time }}</td>
+                            <td>{{ flight.departure_city }} ({{ flight.departure_airport }})</td>
+                            <td>{{ flight.arrival_city }} ({{ flight.arrival_airport }})</td>
+                            <td>${{ flight.base_price }}</td>
+                            <td>{{ flight.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-flights-message">
+                    <p>No departure flights found matching your criteria.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="flights-section">
+            <h2>Return Flights</h2>
+            {% if return_flights %}
+                <table class="flights-table">
+                    <thead>
+                        <tr>
+                            <th>Airline</th>
+                            <th>Flight #</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            {% if session.username %}
+                            <th>Action</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flight in return_flights %}
+                        <tr>
+                            <td>{{ flight.Airline_Name }}</td>
+                            <td>{{ flight.flight_no }}</td>
+                            <td>{{ flight.departure_date_and_time }}</td>
+                            <td>{{ flight.arrival_date_and_time }}</td>
+                            <td>{{ flight.departure_city }} ({{ flight.departure_airport }})</td>
+                            <td>{{ flight.arrival_city }} ({{ flight.arrival_airport }})</td>
+                            <td>${{ flight.base_price }}</td>
+                            <td>{{ flight.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-flights-message">
+                    <p>No return flights found matching your criteria.</p>
+                    {% if not session.username %}
+                    <p>Please <a href="/login" class="action-link">log in</a> to book flights.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <a href="/search_flights" class="search-again-button">Search Again</a>
+    </div>
+</body>
+</html>

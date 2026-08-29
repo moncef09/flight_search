@@ -1,0 +1,38 @@
+<!-- templates/customer/booking_confirmation.html -->
+{% extends "customer/home_customer.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Booking Confirmed!</h4>
+        <p>Your flight has been successfully booked.</p>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            Ticket Information
+        </div>
+        <div class="card-body">
+            <p><strong>Ticket ID:</strong> {{ ticket.ticket_id }}</p>
+            <p><strong>Airline:</strong> {{ ticket.Airline_name }}</p>
+            <p><strong>Flight Number:</strong> {{ ticket.flight_no }}</p>
+            <p><strong>Departure Airport:</strong> {{ ticket.departure_airport }}</p>
+            <p><strong>Arrival Airport:</strong> {{ ticket.arrival_airport }}</p>
+            <p><strong>Departure Time:</strong> {{ ticket.departure_date_and_time }}</p>
+            <p><strong>Arrival Time:</strong> {{ ticket.arrival_date_and_time }}</p>
+            <p><strong>Price Paid:</strong> ${{ ticket.sold_price }}</p>
+        </div>
+    </div>
+    
+    <div class="button-group">
+        <a href="{{ url_for('mainCust.home_cust_flight') }}" class="btn btn-primary">View My Flights</a>
+        <a href="{{ url_for('mainCust.home_cust') }}" class="btn btn-secondary">Return to Home</a>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    .button-group a {
+    margin-right: 100px; /* Add spacing between buttons */
+}
+</style>

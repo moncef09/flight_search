@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Registration</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <header>
+    <nav>
+      <div class="nav-logo">FS</div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/login">Login</a></li>
+        </ul>
+    </nav>
+  </header>
+  
+  <body>
+    <h1>What type of user are you?</h1>
+    <div class="lr_flexbox">
+      <div class="container">
+        <h3>Customer</h3>
+        <p>Search and book flights!</p>
+        <a href="/register_customer">Register here!</a>
+      </div>
+      <div class="container">
+        <h3>Airline Staff</h3>
+        <p>Manage flights</p>
+        <a href="/register_staff">Register here!</a>
+      </div>
+    </div>
+    <a href="/">Go back</a>
+  </body>
+</html>

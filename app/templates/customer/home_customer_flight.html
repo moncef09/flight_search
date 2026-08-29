@@ -1,0 +1,200 @@
+{% extends "customer/home_customer.html" %}
+{% block title %}Your Flights{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flight_page_overrides.css') }}">
+<style>
+  .flight-wrapper {
+    border-radius: 8px;
+  }
+  .section-divider {
+    height: 1px;
+    background-color: #dee2e6;
+    margin: 30px 0;
+  }
+  .btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-cancel:hover {
+    background-color: #c82333;
+  }
+  .message-container {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  .message-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  .message-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+  }
+  .message-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% macro badge(status) -%}
+  {% if   status=='on-time'   %}<span class="badge bg-success">On&nbsp;Time</span>
+  {% elif status=='delayed'   %}<span class="badge bg-warning text-dark">Delayed</span>
+  {% elif status=='cancelled' %}<span class="badge bg-danger">Cancelled</span>
+  {% elif status=='completed' %}<span class="badge bg-success">Completed</span>
+  {% else                     %}<span class="badge bg-secondary">{{ status }}</span>
+  {% endif %}
+{%- endmacro %}
+
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+
+      <div class="card flight-wrapper border-0 shadow-sm">
+        <div class="card-body">
+
+          <h1 class="mb-4">Your Flights</h1>
+          
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="message-container message-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          {% if not upcoming_flights and not past_flights %}
+            <div class="alert alert-info">
+              You haven't booked any flights yet.
+              <a href="{{ url_for('mainCust.home_cust_search') }}">Search for flights</a> to get started.
+            </div>
+
+          {% else %}
+            <!-- Upcoming Flights Section -->
+            <h2 class="h4 mb-3">Upcoming Flights</h2>
+            {% if not upcoming_flights %}
+              <div class="alert alert-info mb-4">You don't have any upcoming flights.</div>
+            {% else %}
+              <div class="table-responsive mb-5">
+                <table class="table table-striped table-hover align-middle">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Airline</th><th>Flight&nbsp;#</th><th>From</th><th>To</th>
+                      <th>Departure</th><th>Arrival</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for f in upcoming_flights %}
+                      <tr>
+                        <td>{{ f.Airline_name }}</td>
+                        <td>{{ f.flight_no }}</td>
+                        <td>{{ f.departure_airport }} ({{ f.departure_city }})</td>
+                        <td>{{ f.arrival_airport }} ({{ f.arrival_city }})</td>
+                        <td class="text-nowrap">{{ f.departure_date_and_time }}</td>
+                        <td class="text-nowrap">{{ f.arrival_date_and_time }}</td>
+                        <td>{{ badge(f.status) }}</td>
+                        <td>
+                          <form action="{{ url_for('mainCust.cancel_flight') }}" method="POST" id="cancel-form-{{ f.ticket_id }}">
+                            <input type="hidden" name="ticket_id" value="{{ f.ticket_id }}">
+                            <input type="hidden" name="can_cancel" value="{{ f.can_cancel|lower }}">
+                            <button type="button" class="btn-cancel" onclick="confirmCancel('{{ f.ticket_id }}', {{ f.can_cancel|lower }})">Cancel Flight</button>
+                          </form>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+            
+            <div class="section-divider"></div>
+            
+            <!-- Past Flights Section -->
+            <h2 class="h4 mb-3">Past Flights</h2>
+            {% if not past_flights %}
+              <div class="alert alert-info">You don't have any past flights.</div>
+            {% else %}
+              <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                  <thead class="table-secondary">
+                    <tr>
+                      <th>Airline</th><th>Flight&nbsp;#</th><th>From</th><th>To</th>
+                      <th>Departure</th><th>Arrival</th><th>Status</th>
+                      
+                      <!-- Check if any completed flights exist in a way that works with Jinja2 -->
+                      {% set has_completed = false %}
+                      {% for flight in past_flights %}
+                        {% if flight.status == 'completed' %}
+                          {% set has_completed = true %}
+                        {% endif %}
+                      {% endfor %}
+                      
+                      {% if has_completed %}
+                        <th>Actions</th>
+                      {% endif %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for f in past_flights %}
+                      <tr>
+                        <td>{{ f.Airline_name }}</td>
+                        <td>{{ f.flight_no }}</td>
+                        <td>{{ f.departure_airport }} ({{ f.departure_city }})</td>
+                        <td>{{ f.arrival_airport }} ({{ f.arrival_city }})</td>
+                        <td class="text-nowrap">{{ f.departure_date_and_time }}</td>
+                        <td class="text-nowrap">{{ f.arrival_date_and_time }}</td>
+                        <td>{{ badge(f.status) }}</td>
+                        
+                        {% if f.status == 'completed' %}
+                          <td>
+                            <a href="{{ url_for('mainCust.home_cust_rate') }}"
+                               class="btn btn-sm btn-primary">
+                              Rate
+                            </a>
+                          </td>
+                        {% elif has_completed %}
+                          <td></td>
+                        {% endif %}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+          {% endif %}
+        </div><!-- /.card-body -->
+      </div><!-- /.card -->
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+</div><!-- /.container-fluid -->
+
+<script>
+  // Function to handle cancel confirmation with built-in browser confirm dialog
+  function confirmCancel(ticketId, canCancel) {
+    let message = "Are you sure you want to cancel this flight? This action cannot be undone.";
+    
+    // Add warning for flights within 24 hours
+    if (!canCancel) {
+      message = "WARNING: This flight is within 24 hours of departure. Cancellations may not be eligible for a full refund.\n\n" + message;
+    }
+    
+    // Use the built-in confirm dialog
+    if (confirm(message)) {
+      // If user confirms, submit the form
+      document.getElementById('cancel-form-' + ticketId).submit();
+    }
+  }
+</script>
+{% endblock %}

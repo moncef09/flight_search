@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	</head>
+
+	<header>
+		<nav>
+			<div class="nav-logo">FS</div>
+			<ul class="nav-links">
+				<li><a href="/">Home</a></li>
+				<li><a href="/register">Register</a></li>
+				<li><a href="/login">Login</a></li>
+			  </ul>
+		</nav>
+	</header>
+	
+<body>
+	<h1>Welcome to Flight Search!</h1>
+	<h2>What type of user are you?</h2>
+	<div class="lr_flexbox">
+		<div class="form-container">
+			<form action="/loginAuthCust" method="POST">
+				<h2>Customer</h2>
+				<p>	Log in with your credentials below: </p>
+				<input type="text" name = "email" placeholder="email" required/> </br>
+				<input type="password" name = "password" placeholder="password" required/></br>
+				<button type="submit"> Login</button>
+				{% if error %}
+					<p class="error"><strong>Error:</strong> {{error}}</p>
+				{% endif %}
+			</form>
+		</div>
+		<div class="form-container">
+			<form action="/loginAuthAirlineStaff" method="POST">
+				<h2>Airline Staff</h2>
+				<p>	Log in with your credentials below: </p>
+				<input type="text" name = "username" placeholder="username" required/> </br>
+				<input type="password" name = "password" placeholder="password" required/></br>
+				<button type="submit"> Login</button>
+				{% if error %}
+					<p class="error"><strong>Error:</strong> {{error}}</p>
+				{% endif %}
+			</form>
+		</div>
+	</div>
+
+<a href="/">Go back</a>
+
+</body>
+
+
+</html>

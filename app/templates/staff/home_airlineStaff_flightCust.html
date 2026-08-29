@@ -1,0 +1,52 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}View Flight
+Customers{% endblock %} {% block content %}
+
+<h1>View Flight Customers</h1>
+{% if not flights %}
+<form action="/searchCustomerFlights" method="POST">
+  <p>Which flight would you like to see the customers for?</p>
+  <br />
+
+  <label for="flight_no">Flight No:</label>
+  <input type="text" name="flight_no" id="flight_no" required />
+
+  <label for="dep_date">Departure Date:</label>
+  <input type="date" name="dep_date" id="dep_date" required />
+
+  <label for="dep_time">Departure Time:</label>
+  <input type="time" name="dep_time" id="dep_time" required />
+
+  <button type="submit">View Customers</button>
+</form>
+{% if error %}
+<br />
+<div class="no-flights-message">
+  <p>{{error}}</p>
+</div>
+{%endif%} {% else %} {% if filters%}
+<div class="filter_container">
+  {%for filter in filters%}
+  <small class="filter_box"> {{filter}} </small>
+  {%endfor%}
+</div>
+<a href="/searchFlightCustomers">Change Flight to view customers 🔎</a>
+{%endif%}
+
+<table>
+  <thead>
+    <tr>
+      <th>Customer Name</th>
+      <th>Passport Number</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in flights %}
+    <tr>
+      <td>{{row ['name']}}</td>
+      <td>{{row ['passport_number']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{%endif%} {% endblock %}

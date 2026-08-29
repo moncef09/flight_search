@@ -1,0 +1,130 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}View Flights{%
+endblock %} {% block content %} {% if error!=True%}
+
+<h1>View Flights</h1>
+{%if not flights %}
+<form action="/searchFlightsStaff" method="POST">
+  <h2>Filter Flights</h2>
+  <p>Use the following fields to filter your flight search</p>
+  <br />
+
+  <label for="start_date">Select Start Date:</label>
+  <input type="date" name="start_date" id="start_date" />
+
+  <label for="end_date">Select End Date:</label>
+  <input type="date" name="end_date" id="end_date" />
+
+  <label for="source">Select Departure Airport:</label>
+  <input type="text" name="source" placeholder="Departure Airport" />
+
+  <label for="destination">Select Arrival Airport:</label>
+  <input type="text" name="destination" placeholder="Arrival Airport" />
+
+  <label for="status">Select Status:</label>
+  <select name="status" id="status">
+    <option value="">-- Choose an option --</option>
+    <option value="delayed">Delayed</option>
+    <option value="on-time">On Time</option>
+  </select>
+
+  <button type="submit">Search Flights</button>
+  {%endif%} {% if error %}
+  <p class="error"><strong>Error:</strong> {{error}}</p>
+  {% endif %}{% endif %}
+</form>
+{% if flights%} {% if filters%}
+<div class="filter_container">
+  {%for filter in filters%}
+  <small class="filter_box"> {{filter}} </small>
+  {%endfor%}
+</div>
+<a href="/editFiltersStaff">Edit Search Filters 🔎</a>
+{%endif%}
+<table>
+  <thead>
+    <tr>
+      <th>Flight</th>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Status</th>
+      <th>Base Price</th>
+      <th>AA Name</th>
+      <th>Plane ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in flights %}
+    <tr>
+      <td>{{row ['Flight']}}</td>
+      <td>{{row ['Departure_Date']}} {{row ['Departure']}}</td>
+      <td>{{row ['Arrival_Date']}} {{row ['Arrival']}}</td>
+      <td>{{row ['status']}}</td>
+      <td>{{row ['base_price']}}</td>
+      <td>{{row ['AA_name']}}</td>
+      <td>{{row ['Airplane_id']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %} {%if future_flights%}
+<h2>Flights For Next 30 Days</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Flight</th>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Status</th>
+      <th>Base Price</th>
+      <th>AA Name</th>
+      <th>Plane ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in future_flights%}
+    <tr>
+      <td>{{row ['flight_no']}}</td>
+      <td>
+        {{row ['departure_date_and_time']}} {{row ['departure_airport_id']}}
+      </td>
+      <td>{{row ['arrival_date_and_time']}} {{row ['arrival_airport_id']}}</td>
+      <td>{{row ['status']}}</td>
+      <td>{{row ['base_price']}}</td>
+      <td>{{row ['Airplane_airline_name']}}</td>
+      <td>{{row ['Airplane_id']}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<a href="/searchFlightCustomers">See Customers based on flight</a>
+{% else %}
+
+<div class="no-flights-message">
+  <p>No return flights found for next 30 days.</p>
+</div>
+
+{% endif %} {% endblock %} {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const start = document.getElementById("start_date");
+    const end = document.getElementById("end_date");
+
+    start.addEventListener("change", () => {
+      const startDate = new Date(start.value);
+      if (isNaN(startDate)) return;
+
+      // Add one day
+      const nextDay = new Date(startDate);
+      nextDay.setDate(startDate.getDate() + 1);
+
+      // Format to YYYY-MM-DD
+      const year = nextDay.getFullYear();
+      const month = String(nextDay.getMonth() + 1).padStart(2, "0");
+      const day = String(nextDay.getDate()).padStart(2, "0");
+
+      end.min = `${year}-${month}-${day}`;
+      end.value = ""; // optional: reset selected value if it becomes invalid
+    });
+  });
+</script>
+{% endblock %}

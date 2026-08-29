@@ -1,0 +1,274 @@
+{% extends "customer/home_customer.html" %} 
+{% block title %}Rate & Comment Flights{% endblock %} 
+{% block content %}
+
+<h1>Rate & Comment Flights</h1>
+
+{% if error %}
+<div class="error-message">
+    <p>{{ error }}</p>
+</div>
+{% endif %}
+
+{% if success %}
+<div class="success-message">
+    <p>{{ success }}</p>
+</div>
+{% endif %}
+
+{% if past_flights %}
+<div class="table-responsive">
+    <table class="flights-table">
+        <thead>
+            <tr>
+                <th>Airline</th>
+                <th>Flight #</th>
+                <th>Departure</th>
+                <th>Departure Time</th>
+                <th>Arrival</th>
+                <th>Arrival Time</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flight in past_flights %}
+            <tr>
+                <td>{{ flight.Airline_Name }}</td>
+                <td>{{ flight.flight_no }}</td>
+                <td>{{ flight.departure_airport }} ({{ flight.departure_city }})</td>
+                <td>{{ flight.departure_date_and_time }}</td>
+                <td>{{ flight.arrival_airport }} ({{ flight.arrival_city }})</td>
+                <td>{{ flight.arrival_date_and_time }}</td>
+                <td>{{ flight.status }}</td>
+                <td>
+                    <button class="rate-button" onclick="openRatingForm('{{ flight.Airline_Name }}', '{{ flight.flight_no }}', '{{ flight.departure_date_and_time }}')">Rate</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="no-results-message">
+    <h2>No Past Flights Found</h2>
+    <p>You don't have any past flights that can be rated.</p>
+</div>
+{% endif %}
+
+<!-- Rating Modal Form -->
+<div id="rating-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Rate Your Flight</h2>
+        <form action="{{ url_for('mainCust.submit_rating') }}" method="POST">
+            <input type="hidden" id="airline-name" name="airline_name">
+            <input type="hidden" id="flight-no" name="flight_no">
+            <input type="hidden" id="departure-time" name="departure_time">
+            
+            <div class="rating-stars">
+                <p>Your Rating:</p>
+                <div class="star-rating">
+                    <input type="radio" id="star5" name="rate" value="5" required>
+                    <label for="star5" title="5 stars">5 stars</label>
+                    <input type="radio" id="star4" name="rate" value="4">
+                    <label for="star4" title="4 stars">4 stars</label>
+                    <input type="radio" id="star3" name="rate" value="3">
+                    <label for="star3" title="3 stars">3 stars</label>
+                    <input type="radio" id="star2" name="rate" value="2">
+                    <label for="star2" title="2 stars">2 stars</label>
+                    <input type="radio" id="star1" name="rate" value="1">
+                    <label for="star1" title="1 star">1 star</label>
+                </div>
+            </div>
+            
+            <div>
+                <label for="comment">Your Comments (Optional):</label>
+                <textarea name="comment" id="comment" rows="4"></textarea>
+            </div>
+            
+            <button type="submit" class="submit-rating">Submit Rating</button>
+        </form>
+    </div>
+</div>
+
+<style>
+/* Rating page specific styles */
+.flights-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.flights-table th, 
+.flights-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.flights-table th {
+    background-color: #34495e;
+    color: white;
+}
+
+.flights-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.rate-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.rate-button:hover {
+    background-color: #2980b9;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Star rating styles */
+.rating-stars {
+    margin: 20px 0;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px;
+    color: transparent;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="gold" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>');
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.submit-rating {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+.submit-rating:hover {
+    background-color: #2980b9;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    border-left: 4px solid #155724;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    border-left: 4px solid #721c24;
+}
+</style>
+
+<script>
+// Modal functionality
+const modal = document.getElementById("rating-modal");
+const span = document.getElementsByClassName("close")[0];
+
+function openRatingForm(airline, flightNo, departureTime) {
+    // Set hidden form values
+    document.getElementById("airline-name").value = airline;
+    document.getElementById("flight-no").value = flightNo;
+    document.getElementById("departure-time").value = departureTime;
+    
+    // For debugging
+    console.log("Setting form values:", airline, flightNo, departureTime);
+    
+    // Show modal
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+{% endblock %}

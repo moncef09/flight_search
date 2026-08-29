@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-logo">FS</div>
+      <ul class="nav-links">
+        <li><a href="/home_customer">Home</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+    <h1>Welcome {{username}}</h1>
+    <div class="sidebar">
+      <a href="/home_customer_flight">Your Flights</a>
+      <a href="/home_customer_search">Seach Flights</a>
+      <a href="/home_customer_rate">Rate Previous Flights</a>
+    </div>
+
+    <div class="lr-flexbox">
+      <div class="container">
+        {% block content %}
+        <h1>Select an Option to Start</h1>
+        {% endblock %}
+      </div>
+    </div>
+  </body>
+</html>

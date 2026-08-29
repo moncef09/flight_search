@@ -1,0 +1,57 @@
+<!-- templates/customer/payment_page.html -->
+{% extends "customer/home_customer.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Payment Information</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            Flight Details
+        </div>
+        <div class="card-body">
+            <p><strong>Airline:</strong> {{ booking.airline }}</p>
+            <p><strong>Flight Number:</strong> {{ booking.flight_no }}</p>
+            <p><strong>Departure Time:</strong> {{ booking.departure_time }}</p>
+            <p><strong>Price:</strong> ${{ booking.sold_price }}</p>
+        </div>
+    </div>
+    
+    <form method="POST" action="{{ url_for('mainCust.process_payment') }}">
+        <div class="form-group mb-3">
+            <label for="card_type">Card Type</label>
+            <select class="form-control" id="card_type" name="card_type" required>
+                <option value="">Select Card Type</option>
+                <option value="Debit">Debit</option>
+                <option value="Credit">Credit</option>
+            </select>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="card_num">Card Number</label>
+            <input type="text" class="form-control" id="card_num" name="card_num" 
+                   placeholder="Card Number" required>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="name_on_card">Name on Card</label>
+            <input type="text" class="form-control" id="name_on_card" name="name_on_card" 
+                   placeholder="Name on Card" required>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="card_expiry_date">Expiry Date</label>
+            <input type="date" class="form-control" id="card_expiry_date" name="card_expiry_date" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Complete Payment</button>
+        <a href="{{ url_for('mainCust.home_cust_search') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<header>
+	<nav>
+		<div class="nav-logo">FS</div>
+		<ul class="nav-links">
+			<li><a href="/">Home</a></li>
+			<li><a href="/register">Register</a></li>
+			<li><a href="/login">Login</a></li>
+		  </ul>
+	</nav>
+</header>
+
+<body>
+
+	<h1>Welcome to Flight Search</h1>
+	<div>
+		<img src="{{ url_for('static', filename='airport.webp') }}" alt="hero image" width="60%"/>
+	</div>
+	<div>
+		<h2>Search for a flight here!</h2>
+		<a href="/search_flights" class="button">Search Flights</a>
+	</div>
+
+{% if message %}
+	<a href="/logout">Logout</a>
+	<a href="/remove_account">Remove Account</a>
+	<p class="message">You are logged in {{message}}. You have {{num}} follower(s)</p> </br>
+	<a href="/tweets">View your tweets</a> </br>
+	<a href="/find_people">Find people to follow</a> </br>
+	<a href="/unfollow">Unfollow someone</a> </br>
+	<a href="/view_followed">View people you have followed</a> </br>
+	</br>
+
+        <h4>15 most recent tweets from you and your followers </h4> </br>
+
+	{% for line in tweets%}
+	        <p>{{line}}</p>
+	        <hr>
+	{% endfor %}
+	{% endif %}
+</body>
+
+</html>

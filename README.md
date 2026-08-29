@@ -1,124 +1,151 @@
-<!--
-  Flight Search
-  -------------
-  This web application makes it easy for customers to search, book, and review flights while giving airline staff the tools they need to manage flight operations.  
-  It is built with Python, Flask, MySQL and a responsive front‑end.
--->
+# ✈️ Flight Search
 
-# ✈️ Flight Search Web Application
+A full-stack flight search, booking, and airline-operations platform — search flights, book with
+dynamic pricing, rate completed trips as a customer; manage flights, fleet, and ratings as airline
+staff.
 
-Welcome to **Flight Search**, a full‑stack web application designed for airlines and travelers alike.  
-Customers can quickly find and book flights, manage their bookings and leave feedback.  
-Airline staff get dashboards to create flights, monitor status, view customer information and analyse bookings.  
+**Live demo:** _not yet deployed — see [Deployment](#deployment) below._
+**API docs:** run locally and visit `http://localhost:8000/docs` for interactive Swagger docs.
 
-<p align="center">
-  <img src="app/static/airport.webp" alt="Flight Search hero image" width="600" />
-</p>
+Originally a Flask + MySQL + Jinja2 app, rebuilt end-to-end as a FastAPI + Postgres API with a
+React + TypeScript frontend, real automated tests on both sides, and a one-command Docker Compose
+setup.
 
-## 🎯 Features
+## Tech stack
 
-- **Intuitive flight search** — search by city, airport code or name, filter by dates and choose one‑way or return trips.
-- **Customer portal** — view past and upcoming trips, book flights with dynamic pricing based on seat availability, and securely pay for tickets.
-- **Ratings & reviews** — passengers can rate and comment on completed flights; average ratings are shown to staff.
-- **Staff portal** — airline employees can create flights, adjust schedules and statuses, view passenger lists, manage airplanes/airports and generate reports.
-- **Role‑based authentication** — separate registration and login flows for customers and airline staff, with protected routes and sessions to keep data secure.
-- **Responsive UI** — built with semantic HTML, modern CSS and Jinja2 templates to provide a consistent experience on desktop and mobile.
-- **Extensible database schema** — a comprehensive MySQL schema powers the application, covering customers, staff, airlines, airplanes, flights, tickets, purchases and reviews.
+| Layer | Technology |
+|---|---|
+| Backend framework | [FastAPI](https://fastapi.tiangolo.com/) (Python 3.12) |
+| Database | [PostgreSQL](https://www.postgresql.org/) via [SQLAlchemy](https://www.sqlalchemy.org/) + [Alembic](https://alembic.sqlalchemy.org/) migrations |
+| Backend architecture | Layered: routers → services → repositories → models |
+| Auth | JWT ([python-jose](https://github.com/mpdavis/python-jose)) + bcrypt password hashing |
+| Backend tests | [pytest](https://pytest.org/), against a real Postgres test database |
+| Frontend | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vite.dev/) |
+| Component library | [MUI](https://mui.com/) (Material UI) |
+| Server state / data fetching | [TanStack Query](https://tanstack.com/query) |
+| Routing | [React Router](https://reactrouter.com/) |
+| Forms & validation | [react-hook-form](https://react-hook-form.com/) + [Zod](https://zod.dev/) |
+| Frontend tests | [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/react) |
+| Infra | Docker Compose (API + frontend + Postgres), GitHub Actions CI |
 
-## 🛠️ Technology Stack
+## Architecture
 
-| Layer            | Technology                                          |
-|------------------|-----------------------------------------------------|
-| **Language**     | [Python 3](https://www.python.org/)                 |
-| **Web framework**| [Flask](https://flask.palletsprojects.com/)         |
-| **Database**     | [MySQL](https://www.mysql.com/) via [PyMySQL](https://pymysql.readthedocs.io/) |
-| **Frontend**     | HTML5, CSS3 (responsive styles), [Jinja2](https://palletsprojects.com/p/jinja/) |
-| **Auth & Sessions**| Flask’s built‑in sessions and custom decorators    |
-| **Deployment**   | Tested locally using MAMP for MySQL; easily portable to Docker or cloud services |
+```mermaid
+flowchart LR
+    subgraph Client
+        React["React SPA\n(Vite, MUI, TanStack Query)"]
+    end
 
-## 🚀 Getting Started
+    subgraph API["FastAPI backend"]
+        Routers["Routers\n(HTTP layer)"]
+        Services["Services\n(business rules:\ndynamic pricing,\ncancellation window,\nauth)"]
+        Repos["Repositories\n(SQLAlchemy queries)"]
+        Routers --> Services --> Repos
+    end
 
-Follow these steps to run the project locally.  
-The instructions assume **Python 3** and **MySQL** are installed on your machine.  
+    DB[("PostgreSQL")]
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/<your‑username>/flight_search.git
-cd flight_search
+    React -- "JWT-authenticated\nREST + JSON" --> Routers
+    Repos --> DB
 ```
 
-### 2. Install dependencies
+Each backend layer has exactly one job — see [backend/README.md](backend/README.md) for the full
+rationale and a guided tour of the code, and [frontend/README.md](frontend/README.md) for the
+frontend's structure and library choices.
 
-Install the Python dependencies using `pip`:
+## Features
 
-```bash
-pip install flask pymysql
-```
+- **Flight search** — by city, airport name, or airport code; one-way or round trip.
+- **Booking with dynamic pricing** — once a flight is ≥60% booked, price surcharges 20% above base — quoted live before payment, re-verified server-side at checkout.
+- **Cancellation policy** — tickets can't be cancelled within 24 hours of departure.
+- **Ratings & reviews** — customers can rate flights they've actually flown on, once each; staff see aggregated ratings.
+- **Staff dashboard** — manage flights and statuses, add airports/airplanes, view ratings, and pull sales reports — all backed by the same API a customer uses, gated by role.
+- **JWT auth** — role-aware (customer/staff) tokens, enforced server-side (`deps.py`) and mirrored client-side (`ProtectedRoute`) for UX.
 
-### 3. Set up the database
+## Getting started
 
-1. Start your MySQL server (the original project uses [MAMP](https://www.mamp.info/) with a default socket; adjust configuration in `app/__init__.py` if you use a different host or port).
-2. Create a database named **`flights_new`**.
-3. Import the schema contained in `app/create_tables.SQL`:
-
-   ```sql
-   SOURCE /path/to/app/create_tables.SQL;
-   ```
-
-You can optionally add sample data to test the application.
-
-### 4. Run the application
-
-Execute the `run.py` script to start the Flask development server:
+### Option A: Docker Compose (recommended — one command)
 
 ```bash
-python run.py
+docker compose up --build
 ```
 
-The application will run at `http://127.0.0.1:8889`.  Visit this URL in your browser to explore the site.  
-For live reloading during development, run Flask in debug mode (already enabled in `run.py`).
+This builds and starts Postgres, the FastAPI backend (migrations run automatically on startup),
+and the React frontend served via nginx.
 
-## 🧭 Project Structure
+- Frontend: [http://localhost:8081](http://localhost:8081)
+- API + docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Option B: run backend and frontend manually
+
+<details>
+<summary>Backend (FastAPI)</summary>
+
+```bash
+cd backend
+pip install -r requirements.txt
+
+# Postgres via Docker (or point DATABASE_URL at your own instance)
+docker run -d --name flight_search_postgres \
+  -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=flights \
+  -p 5432:5432 postgres:16
+
+cp .env.example .env   # adjust DATABASE_URL/SECRET_KEY if needed
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+</details>
+
+<details>
+<summary>Frontend (React)</summary>
+
+```bash
+cd frontend
+npm install
+cp .env.example .env   # VITE_API_URL, defaults to http://127.0.0.1:8000
+npm run dev
+```
+
+Frontend runs at `http://localhost:5173`.
+</details>
+
+## Tests
+
+```bash
+# Backend
+cd backend && pytest -v
+
+# Frontend
+cd frontend && npm test
+```
+
+Both suites run against real dependencies rather than mocks where it matters — backend tests hit
+a real Postgres database, and the frontend's fetch-flow test exercises real loading/error/empty
+states through TanStack Query.
+
+## CI
+
+Every push and pull request to `main` runs backend tests (pytest against a Postgres service
+container), and frontend lint + typecheck + tests + build, via GitHub Actions
+(`.github/workflows/ci.yml`).
+
+## Deployment
+
+Not yet deployed. Planned: FastAPI on Render/Railway, React on Vercel, managed Postgres — this
+section will be updated with the live URL once that's set up.
+
+## Project structure
 
 ```
 flight_search/
-├─ app/                 # Application package
-│  ├─ static/           # Static assets (CSS, images)
-│  ├─ templates/        # HTML/Jinja2 templates
-│  ├─ blueprints/       # Modular Flask blueprints
-│  │  ├─ auth/          # Registration & login for customers and staff
-│  │  ├─ main/          # Public pages, customer & staff dashboards
-│  │  └─ search/        # Flight search and staff flight management
-│  └─ create_tables.SQL # SQL schema for the MySQL database
-├─ run.py               # Entry point to run the Flask app
-└─ README.md            # You are here 📖
+├─ backend/          # FastAPI app - see backend/README.md
+├─ frontend/         # React app - see frontend/README.md
+├─ docker-compose.yml
+├─ .github/workflows/ci.yml
+├─ app/              # legacy Flask app (superseded by backend/ + frontend/, kept for reference)
+└─ run.py            # legacy Flask entrypoint
 ```
 
-The application uses **Flask blueprints** to separate concerns: `auth` handles authentication, `main` contains general routes and dashboards for customers and staff, and `search` contains staff‑only search and management endpoints.  Static assets are served from the `static` directory, and templates live in the `templates` directory.
+## License
 
-## 🧪 Example Use Cases
-
-- **Searching for flights:** a customer enters a departure city, arrival city and dates.  The application displays matching flights with details like departure/arrival times, airline and price.
-- **Booking a flight:** if seats are available, dynamic pricing kicks in (tickets become 20 % more expensive once 60 % of seats are sold).  The user enters payment details and receives confirmation with a unique ticket ID.
-- **Rating a flight:** after travelling, customers can rate and review flights.  Staff can view these ratings to improve services.
-- **Managing flights (staff):** staff users create new flights, update existing ones and change statuses (e.g. on‑time, delayed, cancelled).  They can also view passenger lists and generate sales reports.
-
-## 🤝 Contributing
-
-Contributions are welcome!  Feel free to fork the repository, create a feature branch, and open a pull request.
-
-1. Fork this repository.
-2. Create your feature branch: `git checkout -b <name_of_feature>`.
-3. Commit your changes: `git commit -m 'Add some feature'`.
-4. Push to the branch: `git push origin <name_of_feature>`.
-5. Open a pull request.
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).  See the **LICENSE** file for details.
-
----
-
-> Built with care by the Flight Search team.  
-> Designed to showcase Python & Flask skills, SQL knowledge, and full‑stack development.
+[MIT License](LICENSE).

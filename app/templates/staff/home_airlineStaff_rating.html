@@ -1,0 +1,57 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}View Flights
+Ratings{% endblock %} {% block content %}
+
+<h1>View Flight Ratings</h1>
+{% if avg_ratings %}
+<h2>Average Ratings by Flight</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Flight No</th>
+            <th>Departure Date</th>
+            <th>Average Rating</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in avg_ratings %}
+        <tr>
+            <td>{{ row['flight_no'] }}</td>
+            <td>{{ row['departure_date_and_time'] }}</td>
+            <td>{{ row['avg_rating'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if reviews %}
+<h2>Customer Reviews</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Flight No</th>
+            <th>Departure Date</th>
+            <th>Customer Email</th>
+            <th>Rating</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in reviews %}
+        <tr>
+            <td>{{ row['flight_no'] }}</td>
+            <td>{{ row['departure_date_and_time'] }}</td>
+            <td>{{ row['email'] }}</td>
+            <td>{{ row['rate'] }}</td>
+            <td>{{ row['comment'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if error %}
+<p class="error"><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+{% endblock %}

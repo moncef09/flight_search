@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <title>Logout</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="nav-logo">FS</div>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/register">Register</a></li>
+          <li><a href="/login">Login</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <h1>YOU HAVE LOGGED OUT</h1>
+    <h3>I hope you've had a nice session</h3>
+    <a href="/">Return To Homepage</a>
+  </body>
+</html>

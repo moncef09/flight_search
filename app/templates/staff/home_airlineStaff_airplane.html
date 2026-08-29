@@ -1,0 +1,39 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}Add New Airplane{%
+endblock %} {% block content %}
+
+<h1>Add New Airplane</h1>
+<div class="form-container">
+    <form action="/home_airlineStaff_airplane" method="POST">
+    <p> Airplane information: </p>
+    <input type="text" name = "Airline_name" placeholder="Airline Name" required/> </br>
+    <input type="text" name = "id" placeholder="ID" required/></br>
+    <input type="text" name = "num_seats" placeholder="Number of Seats" required/></br>
+    <input type="text" name = "manufacturing_co" placeholder="Manufacturing Company" required/></br>
+    <button type="submit"> New Airplane</button>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{error}}</p>
+    {% endif %}
+    </form>
+</div>
+{% if airplanes %}
+<h1>Airplanes for {{airplanes[0]['Airline_name']}}</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Airplane ID</th>
+            <th>Number of Seats</th>
+            <th>Manufacturing Company</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for airplane in airplanes %}
+        <tr>
+            <td>{{airplane['id']}}</td>
+            <td>{{airplane['num_seats']}}</td>
+            <td>{{airplane['manufacturing_co']}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

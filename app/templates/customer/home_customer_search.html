@@ -1,0 +1,268 @@
+{% extends "customer/home_customer.html" %} 
+{% block title %}Search Flights{% endblock %} 
+{% block content %}
+
+<h1>Search Flights</h1>
+
+<div class="form-container">
+    <form action="{{ url_for('mainCust.customer_search_flights') }}" method="POST">
+        <h2>Find Your Flight</h2>
+        <div>
+            <label for="source">Departure City or Airport:</label>
+            <input type="text" name="source" placeholder="City or Airport Code" required>
+        </div>
+        <div>
+            <label for="destination">Arrival City or Airport:</label>
+            <input type="text" name="destination" placeholder="City or Airport Code" required>
+        </div>
+        <div>
+            <label for="departure_date">Departure Date:</label>
+            <input type="date" name="departure_date" required>
+        </div>
+        <div>
+            <label for="return_date">Return Date (Optional):</label>
+            <input type="date" name="return_date">
+        </div>
+        <button type="submit" class="search-button">Search Flights</button>
+    </form>
+</div>
+
+{% if flights %}
+<h2>Available Flights</h2>
+<div class="table-responsive">
+    <table class="flights-table">
+        <thead>
+            <tr>
+                <th>Airline</th>
+                <th>Flight #</th>
+                <th>Departure</th>
+                <th>Departure Time</th>
+                <th>Arrival</th>
+                <th>Arrival Time</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flight in flights %}
+            <tr>
+                <td>{{ flight.Airline_Name }}</td>
+                <td>{{ flight.flight_no }}</td>
+                <td>{{ flight.departure_airport_name if flight.departure_airport_name else flight.departure_airport_id }} <br><span class="city-name">({{ flight.departure_city }})</span></td>
+                <td>{{ flight.departure_date_and_time.strftime('%Y-%m-%d') if flight.departure_date_and_time.strftime else flight.departure_date_and_time }}<br>
+                    <span class="time">{{ flight.departure_date_and_time.strftime('%H:%M') if flight.departure_date_and_time.strftime else '' }}</span>
+                </td>
+                <td>{{ flight.arrival_airport_name if flight.arrival_airport_name else flight.arrival_airport_id }} <br><span class="city-name">({{ flight.arrival_city }})</span></td>
+                <td>{{ flight.arrival_date_and_time.strftime('%Y-%m-%d') if flight.arrival_date_and_time.strftime else flight.arrival_date_and_time }}<br>
+                    <span class="time">{{ flight.arrival_date_and_time.strftime('%H:%M') if flight.arrival_date_and_time.strftime else '' }}</span>
+                </td>
+                <td><span class="status-{{ flight.status|lower }}">{{ flight.status }}</span></td>
+                <td class="price">${{ flight.base_price }}</td>
+                <td>
+                    <form action="{{ url_for('mainCust.book_flight') }}" method="POST">
+                        <input type="hidden" name="airline" value="{{ flight.Airline_Name }}">
+                        <input type="hidden" name="flight_no" value="{{ flight.flight_no }}">
+                        <input type="hidden" name="departure_time" value="{{ flight.departure_date_and_time }}">
+                        <button type="submit" class="book-button">Book</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="no-results-message">
+    <h2>No Outbound Flights Found</h2>
+    <p>We couldn't find any flights matching your search criteria. Please try different dates or locations.</p>
+</div>
+{% endif %}
+
+{% if return_flights %}
+<h2>Return Flights</h2>
+<div class="table-responsive">
+    <table class="flights-table">
+        <thead>
+            <tr>
+                <th>Airline</th>
+                <th>Flight #</th>
+                <th>Departure</th>
+                <th>Departure Time</th>
+                <th>Arrival</th>
+                <th>Arrival Time</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flight in return_flights %}
+            <tr>
+                <td>{{ flight.Airline_Name }}</td>
+                <td>{{ flight.flight_no }}</td>
+                <td>{{ flight.departure_airport_name if flight.departure_airport_name else flight.departure_airport_id }} <br><span class="city-name">({{ flight.departure_city }})</span></td>
+                <td>{{ flight.departure_date_and_time.strftime('%Y-%m-%d') if flight.departure_date_and_time.strftime else flight.departure_date_and_time }}<br>
+                    <span class="time">{{ flight.departure_date_and_time.strftime('%H:%M') if flight.departure_date_and_time.strftime else '' }}</span>
+                </td>
+                <td>{{ flight.arrival_airport_name if flight.arrival_airport_name else flight.arrival_airport_id }} <br><span class="city-name">({{ flight.arrival_city }})</span></td>
+                <td>{{ flight.arrival_date_and_time.strftime('%Y-%m-%d') if flight.arrival_date_and_time.strftime else flight.arrival_date_and_time }}<br>
+                    <span class="time">{{ flight.arrival_date_and_time.strftime('%H:%M') if flight.arrival_date_and_time.strftime else '' }}</span>
+                </td>
+                <td><span class="status-{{ flight.status|lower }}">{{ flight.status }}</span></td>
+                <td class="price">${{ flight.base_price }}</td>
+                <td>
+                    <form action="{{ url_for('mainCust.book_flight') }}" method="POST">
+                        <input type="hidden" name="airline" value="{{ flight.Airline_Name }}">
+                        <input type="hidden" name="flight_no" value="{{ flight.flight_no }}">
+                        <input type="hidden" name="departure_time" value="{{ flight.departure_date_and_time }}">
+                        <button type="submit" class="book-button">Book</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif return_date %}
+<div class="no-results-message">
+    <h2>No Return Flights Found</h2>
+    <p>We couldn't find any return flights matching your search criteria. Please try different dates or locations.</p>
+</div>
+{% endif %}
+
+
+<style>
+.form-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.form-container h2 {
+    margin-top: 0;
+    color: #34495e;
+    margin-bottom: 20px;
+}
+
+.form-container div {
+    margin-bottom: 15px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.form-container input[type="text"],
+.form-container input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-button, .book-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover, .book-button:hover {
+    background-color: #2980b9;
+}
+
+.flights-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.flights-table th, 
+.flights-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.flights-table th {
+    background-color: #34495e;
+    color: white;
+}
+
+.flights-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.city-name {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.time {
+    font-weight: bold;
+}
+
+.price {
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.status-scheduled {
+    color: #27ae60;
+}
+
+.status-delayed {
+    color: #e67e22;
+}
+
+.status-cancelled {
+    color: #e74c3c;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 15px;
+    border-left: 4px solid #c62828;
+}
+
+.no-results-message {
+    background-color: #e8f4f8;
+    color: #0277bd;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #0277bd;
+    text-align: center;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .flights-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+</style>
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}Add New Airport{%
+endblock %} {% block content %}
+
+<h1>Add New Airport</h1>
+<div class="form-container">
+    <form action="/home_airlineStaff_airport" method="POST">
+    <p> Airport information: </p>
+    <input type="text" name = "Airport_id" placeholder="Airport ID" required/> </br>
+    <input type="text" name = "name" placeholder="Airport Name" required/></br>
+    <input type="text" name = "city" placeholder="City" required/></br>
+    <input type="text" name = "country" placeholder="Country" required/></br>
+    <button type="submit"> New Airport</button>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{error}}</p>
+    {% endif %}
+    </form>
+</div>
+{% endblock %}

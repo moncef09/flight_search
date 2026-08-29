@@ -1,0 +1,51 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}Change Flight
+Status{% endblock %} {% block content %}
+
+<h1>Change Flight Status</h1>
+<form action="/changeFlightStatus" method="POST">
+  <table>
+    <thead>
+      <tr>
+        <th>Flight No.</th>
+        <th>Departure</th>
+        <th>Arrival</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in flights %}
+      <tr>
+        <td>{{ row['flight_no'] }}</td>
+        <td>
+          {{ row['departure_date_and_time'] }} <br />{{
+          row['departure_airport_id'] }}
+        </td>
+        <td>
+          {{ row['arrival_date_and_time'] }} <br />{{ row['arrival_airport_id']
+          }}
+        </td>
+        <td>
+          <select
+            name="status_{{ row['flight_no'] }}_{{ row['departure_date_and_time'] }}"
+          >
+            {% if row['status'].lower() == 'on-time' %}
+            <option value="On-Time" selected>On-Time</option>
+            <option value="Delayed">Delayed</option>
+            {% else %}
+            <option value="On-Time">On-Time</option>
+            <option value="Delayed" selected>Delayed</option>
+            {% endif %}
+          </select>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit">Change Status</button>
+</form>
+<br />
+{% if success%}
+<div class="change-success-message">
+  <p>Flight Status Changed Successfully ✅</p>
+</div>
+{%endif%} {% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<header>
+	<nav>
+		<div class="nav-logo">FS</div>
+		<ul class="nav-links">
+			<li><a href="/">Home</a></li>
+			<li><a href="/register">Register</a></li>
+			<li><a href="/login">Login</a></li>
+		  </ul>
+	</nav>
+</header>
+
+<body>
+    <div class="form-container">
+    <form action="/registerAuthCustomer" method="POST">
+        <h2>Customer Register</h2>
+        <p>Create your account below:</p>
+        <input type="text" name="email" placeholder="Email" required/> </br>
+        <input type="password" name="password" placeholder="Password" required/></br>
+        <input type="text" name="name" placeholder="Full Name" required/></br>
+        <input type="text" name="building_num" placeholder="Building Number" required/></br>
+        <input type="text" name="street" placeholder="Street" required/></br>
+        <input type="text" name="city" placeholder="City" required/></br>
+        <input type="text" name="state" placeholder="State" required/></br>
+        <input type="text" name="phone_number" placeholder="Phone Number" required/></br>
+        <input type="text" name="passport_number" placeholder="Passport Number" required/></br>
+        <input type="date" name="passport_expiration" placeholder="Passport Expiration" required/></br>
+        <input type="text" name="passport_country" placeholder="Passport Country" required/></br>
+        <input type="date" name="date_of_birth" placeholder="Date of Birth" required/></br>
+        <button type="submit">Register</button>
+        {% if error %}
+            <p class="error"><strong>Error:</strong> {{error}}</p>
+        {% endif %}
+    </form>
+    <a href="/register">Go Back</a>
+    </div>
+</body>
+</html>

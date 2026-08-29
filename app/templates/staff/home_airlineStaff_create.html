@@ -1,0 +1,175 @@
+{% extends "staff/home_airlineStaff.html" %} {% block title %}Create New
+Flights{% endblock %} {% block content %}
+
+<form action="/createFlightsStaff" method="POST">
+  <h2>Create New Flight</h2>
+  <p>Use the following fields to filter your flight search</p>
+  <br />
+
+  <label for="Flight No.">Flight No:</label>
+  <input type="text" name="flight_no" placeholder="Flight No." required />
+
+  <label for="dep_date">Departure Date:</label>
+  <input type="date" name="dep_date" id="dep_date" required />
+
+  <label for="dep_time">Departure Time:</label>
+  <input type="time" name="dep_time" id="dep_time" required />
+
+  <label for="dep_airport">Departure Airport ID</label>
+  <input
+    type="text"
+    name="dep_airport"
+    placeholder="Departure Airport ID"
+    required
+  />
+
+  <label for="arr_date">Arrival Date:</label>
+  <input type="date" name="arr_date" id="arr_date" required />
+
+  <label for="arr_time">Arrival Time:</label>
+  <input type="time" name="arr_time" id="arr_time" required />
+
+  <label for="arr_airport">Arrival Airport ID</label>
+  <input
+    type="text"
+    name="arr_airport"
+    placeholder="Arrival Airport ID"
+    required
+  />
+
+  <label for="status">Select Status:</label>
+  <select name="status" id="status" required>
+    <option value="">-- Choose an option --</option>
+    <option value="delayed">Delayed</option>
+    <option value="on-time">On Time</option>
+  </select>
+
+  <label for="base_price">Base Price</label>
+  <input type="text" name="base_price" placeholder="Base Price" required />
+
+  <!-- removed because of session already possible -->
+  <!-- <label for="AA_name">Airplane Airline Name</label>
+  <input type="text" name="AA_name" placeholder="Airplane Airline Name" /> -->
+
+  <label for="AA_id">Airplane Airline ID</label>
+  <input type="text" name="AA_id" placeholder="Airplane Airline ID" required />
+
+  <button type="submit">Create Flight</button>
+  {% if error %}
+  <p class="error"><strong>Error:</strong> {{error}}</p>
+  {% endif %}
+</form>
+
+<h2>Future Flights (Next 30 Days)</h2>
+{% if future_flights %}
+<table>
+  <thead>
+    <tr>
+      <th>Flight No</th>
+      <th>Departure Date & Time</th>
+      <th>Arrival Date & Time</th>
+      <th>Departure Airport</th>
+      <th>Arrival Airport</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for flight in future_flights %}
+    <tr>
+      <td>{{ flight['flight_no'] }}</td>
+      <td>{{ flight['departure_date_and_time'] }}</td>
+      <td>{{ flight['arrival_date_and_time'] }}</td>
+      <td>{{ flight['departure_airport_id'] }}</td>
+      <td>{{ flight['arrival_airport_id'] }}</td>
+      <td>{{ flight['status'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No flights found for the next 30 days.</p>
+{% endif %} {% endblock %} {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const startDateInput = document.getElementById("dep_date");
+    const startTimeInput = document.getElementById("dep_time");
+    const endDateInput = document.getElementById("arr_date");
+    const endTimeInput = document.getElementById("arr_time");
+
+    // Function to compare dates and times
+    function isArrivalValid() {
+      const depDateStr = startDateInput.value;
+      const arrDateStr = endDateInput.value;
+      const depTime = startTimeInput.value;
+      const arrTime = endTimeInput.value;
+
+      if (!depDateStr || !arrDateStr || !depTime || !arrTime) return true;
+
+      if (depDateStr === arrDateStr) {
+        // Same day: check time
+        const [depH, depM] = depTime.split(":").map(Number);
+        const [arrH, arrM] = arrTime.split(":").map(Number);
+
+        const depMinutes = depH * 60 + depM;
+        const arrMinutes = arrH * 60 + arrM;
+
+        return arrMinutes > depMinutes;
+      }
+
+      // Different dates: skip time comparison
+      return true;
+    }
+
+    // Update arrival date and time validity when departure date changes
+    startDateInput.addEventListener("change", () => {
+      const depDate = new Date(startDateInput.value);
+      if (isNaN(depDate)) return;
+
+      // Add one day to the departure date
+      const nextDay = new Date(depDate);
+      nextDay.setDate(depDate.getDate() + 1);
+
+      // Update arrival date min value
+      const year = nextDay.getFullYear();
+      const month = String(nextDay.getMonth() + 1).padStart(2, "0");
+      const day = String(nextDay.getDate()).padStart(2, "0");
+      endDateInput.min = `${year}-${month}-${day}`;
+      endDateInput.value = ""; // Reset selected value if it becomes invalid
+    });
+
+    // Update the arrival time min value when departure time changes
+    startTimeInput.addEventListener("change", () => {
+      if (!startDateInput.value || !startTimeInput.value || !endDateInput.value)
+        return;
+
+      // Only apply min time if same day
+      if (startDateInput.value === endDateInput.value) {
+        const depTime = startTimeInput.value.split(":");
+        const depHour = parseInt(depTime[0], 10);
+        const depMinute = parseInt(depTime[1], 10);
+
+        const depDateTime = new Date();
+        depDateTime.setHours(depHour, depMinute + 1);
+
+        const minHour = String(depDateTime.getHours()).padStart(2, "0");
+        const minMinute = String(depDateTime.getMinutes()).padStart(2, "0");
+
+        endTimeInput.min = `${minHour}:${minMinute}`;
+      } else {
+        endTimeInput.min = ""; // allow any time
+      }
+    });
+
+    // Check if arrival time is valid before submitting the form
+    document.querySelector("form").addEventListener("submit", function (e) {
+      if (!isArrivalValid()) {
+        e.preventDefault(); // Prevent form submission
+        alert(
+          "Arrival time must be after departure time. Please adjust accordingly"
+        );
+      }
+    });
+  });
+</script>
+
+{% endblock %}

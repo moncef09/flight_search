@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-logo">FS</div>
+      <ul class="nav-links">
+        <li><a href="/home_staff">Home</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+
+    <h1>Welcome {{username}}</h1>
+    <div class="sidebar">
+      <a href="/home_airlineStaff_view">View Flights</a>
+      <a href="/home_airlineStaff_create">Create New Flights</a>
+      <a href="/home_airlineStaff_change">Change Flights Status</a>
+      <a href="/home_airlineStaff_airplane">Add New Airplane</a>
+      <a href="/home_airlineStaff_airport">Add New Airport</a>
+      <a href="/home_airlineStaff_rating">View Flight Ratings</a>
+      <a href="/home_airlineStaff_report">View Reports</a>
+    </div>
+
+    <div class="lr-flexbox">
+      <div class="container">
+        {% block content %}
+        <h1>Select an Option to Start</h1>
+        {% endblock %} {% if error=='No Session'%}
+        <h1>404 Not found</h1>
+        {%endif%}
+      </div>
+    </div>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
