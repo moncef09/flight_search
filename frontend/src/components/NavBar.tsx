@@ -1,4 +1,5 @@
 import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
@@ -14,8 +15,20 @@ export function NavBar() {
   return (
     <AppBar position="static" color="primary">
       <Toolbar sx={{ gap: 2 }}>
-        <Typography variant="h6" component={RouterLink} to="/" sx={{ color: "inherit", textDecoration: "none" }}>
-          ✈️ Flight Search
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          sx={{
+            color: "inherit",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <SendIcon fontSize="small" />
+          Flight Search
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         {isAuthenticated ? (
