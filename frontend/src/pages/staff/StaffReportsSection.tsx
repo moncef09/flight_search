@@ -16,6 +16,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { getSalesReport } from "../../api/staff";
 
 export function StaffReportsSection() {
@@ -79,22 +88,36 @@ export function StaffReportsSection() {
           {data.monthly_sales.length === 0 ? (
             <Alert severity="info">No sales data yet.</Alert>
           ) : (
-            <Table size="small" sx={{ maxWidth: 400 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Month</TableCell>
-                  <TableCell align="right">Tickets sold</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.monthly_sales.map((m) => (
-                  <TableRow key={m.month}>
-                    <TableCell>{m.month}</TableCell>
-                    <TableCell align="right">{m.tickets_sold}</TableCell>
+            <>
+              <Card variant="outlined" sx={{ maxWidth: 600, p: 2 }}>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={data.monthly_sales}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip formatter={(value) => [value, "Tickets sold"]} />
+                    <Bar dataKey="tickets_sold" fill="#1565c0" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+
+              <Table size="small" sx={{ maxWidth: 400 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Month</TableCell>
+                    <TableCell align="right">Tickets sold</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {data.monthly_sales.map((m) => (
+                    <TableRow key={m.month}>
+                      <TableCell>{m.month}</TableCell>
+                      <TableCell align="right">{m.tickets_sold}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
           )}
         </>
       )}

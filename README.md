@@ -26,6 +26,7 @@ setup.
 | Routing | [React Router](https://reactrouter.com/) |
 | Forms & validation | [react-hook-form](https://react-hook-form.com/) + [Zod](https://zod.dev/) |
 | Frontend tests | [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/react) |
+| Data visualization | [Recharts](https://recharts.org/) (staff sales report) |
 | Infra | Docker Compose (API + frontend + Postgres), GitHub Actions CI |
 
 ## Architecture
@@ -59,7 +60,7 @@ frontend's structure and library choices.
 - **Booking with dynamic pricing** — once a flight is ≥60% booked, price surcharges 20% above base — quoted live before payment, re-verified server-side at checkout.
 - **Cancellation policy** — tickets can't be cancelled within 24 hours of departure.
 - **Ratings & reviews** — customers can rate flights they've actually flown on, once each; staff see aggregated ratings.
-- **Staff dashboard** — manage flights and statuses, add airports/airplanes, view ratings, and pull sales reports — all backed by the same API a customer uses, gated by role.
+- **Staff dashboard** — manage flights and statuses, add airports/airplanes, view ratings, and pull sales reports (with a monthly sales chart) — all backed by the same API a customer uses, gated by role.
 - **JWT auth** — role-aware (customer/staff) tokens, enforced server-side (`deps.py`) and mirrored client-side (`ProtectedRoute`) for UX.
 
 ## Getting started

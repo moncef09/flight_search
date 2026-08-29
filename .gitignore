@@ -63,4 +63,7 @@ Icon
 .project
 .idea/
 .vscode/
-.ropeproject/.claude/
+.ropeproject/
+
+# Claude Code tooling config (local dev preview launch config, not part of the app)
+.claude/
